@@ -1,0 +1,237 @@
+{
+	"info": {
+		"_postman_id": "drone-detection-api-v1",
+		"name": "Drone Detection API v1",
+		"description": "API REST de Detección de Drones con CodeIgniter 4\n\nEsta colección incluye todos los endpoints disponibles para:\n- Registrar detecciones de drones\n- Consultar detecciones (paginadas y filtradas)\n- Obtener lista de fabricantes\n- Ver estadísticas del dashboard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Detections",
+			"description": "Endpoints para gestión de detecciones",
+			"item": [
+				{
+					"name": "Registrar nueva detección (DJI)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mac\": \"60:60:1F:AA:BB:CC\",\n    \"rssi\": -50,\n    \"sensor_location\": \"Edificio A - Planta 3\",\n    \"timestamp\": \"2024-01-15T10:30:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/detections",
+							"host": ["{{base_url}}"],
+							"path": ["detections"]
+						},
+						"description": "Registra una nueva detección de un dron DJI (fabricante conocido)"
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar detección (Parrot)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mac\": \"90:3A:E6:12:34:56\",\n    \"rssi\": -65,\n    \"sensor_location\": \"Zona Norte - Exterior\",\n    \"timestamp\": \"2024-01-15T11:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/detections",
+							"host": ["{{base_url}}"],
+							"path": ["detections"]
+						},
+						"description": "Registra una nueva detección de un dron Parrot"
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar detección (Desconocido)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mac\": \"AA:BB:CC:11:22:33\",\n    \"rssi\": -72,\n    \"sensor_location\": \"Perímetro Sur\",\n    \"timestamp\": \"2024-01-15T12:15:00Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/detections",
+							"host": ["{{base_url}}"],
+							"path": ["detections"]
+						},
+						"description": "Registra una detección con MAC de fabricante desconocido (manufacturer_id será NULL)"
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar detección (Validación fallida)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"mac\": \"invalid-mac\",\n    \"rssi\": \"no-es-numero\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/detections",
+							"host": ["{{base_url}}"],
+							"path": ["detections"]
+						},
+						"description": "Prueba de validación - debe retornar 400 Bad Request"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar detecciones (paginadas)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/detections?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["detections"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtiene lista paginada de detecciones"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar detecciones (filtrar por fabricante)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/detections?manufacturer_id=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["detections"],
+							"query": [
+								{
+									"key": "manufacturer_id",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Filtra detecciones por ID de fabricante"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar detecciones (filtrar por ubicación)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/detections?location=Edificio",
+							"host": ["{{base_url}}"],
+							"path": ["detections"],
+							"query": [
+								{
+									"key": "location",
+									"value": "Edificio"
+								}
+							]
+						},
+						"description": "Filtra detecciones por ubicación del sensor (búsqueda parcial)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener últimas 5 detecciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/detections/latest",
+							"host": ["{{base_url}}"],
+							"path": ["detections", "latest"]
+						},
+						"description": "Atajo para obtener las 5 detecciones más recientes (para dashboard)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Manufacturers",
+			"description": "Endpoints para fabricantes de drones",
+			"item": [
+				{
+					"name": "Listar fabricantes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/manufacturers",
+							"host": ["{{base_url}}"],
+							"path": ["manufacturers"]
+						},
+						"description": "Obtiene lista de todos los fabricantes de drones conocidos"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stats",
+			"description": "Endpoints de estadísticas",
+			"item": [
+				{
+					"name": "Obtener estadísticas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/stats",
+							"host": ["{{base_url}}"],
+							"path": ["stats"]
+						},
+						"description": "Estadísticas para el dashboard: total de detecciones, drones conocidos/desconocidos, fabricante top"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
