@@ -1,0 +1,58 @@
+/* Global Styles - Drone Detection System */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
+  color: #fff;
+}
+
+.main-content {
+  min-height: calc(100vh - 70px);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(233, 69, 96, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(233, 69, 96, 0.8);
+}
+
+/* Selection */
+::selection {
+  background: rgba(233, 69, 96, 0.3);
+  color: #fff;
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid #e94560;
+  outline-offset: 2px;
+}
+
+button:focus, input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.5);
+}

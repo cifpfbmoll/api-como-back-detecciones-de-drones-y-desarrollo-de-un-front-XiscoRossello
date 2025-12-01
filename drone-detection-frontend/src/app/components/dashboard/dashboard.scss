@@ -1,0 +1,227 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: #e94560;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: #fff;
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(233, 69, 96, 0.3);
+    border-top-color: #e94560;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  p {
+    margin-top: 1rem;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff4444;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: #ff4444;
+
+  button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #e94560;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #d63050;
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-icon {
+    font-size: 3rem;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+
+    &.manufacturer-name {
+      font-size: 1.2rem;
+    }
+  }
+
+  .stat-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+
+  &.total { border-left: 4px solid #3498db; }
+  &.known { border-left: 4px solid #2ecc71; }
+  &.unknown { border-left: 4px solid #f39c12; }
+  &.manufacturer { border-left: 4px solid #e94560; }
+}
+
+.latest-section {
+  h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.detections-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.detection-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  .detection-header {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    .mac-address {
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      color: #e94560;
+      font-weight: 600;
+    }
+
+    .signal-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+
+      &.signal-strong {
+        background: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+      }
+
+      &.signal-medium {
+        background: rgba(243, 156, 18, 0.2);
+        color: #f39c12;
+      }
+
+      &.signal-weak {
+        background: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+      }
+    }
+  }
+
+  .detection-body {
+    padding: 1.25rem;
+
+    .detection-info {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+      }
+
+      .value {
+        color: #fff;
+        font-weight: 500;
+
+        &.unknown {
+          color: #f39c12;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

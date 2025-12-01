@@ -1,0 +1,67 @@
+<div class="manufacturers-page">
+  <h1 class="page-title">🏭 Fabricantes de Drones Conocidos</h1>
+
+  <!-- Search -->
+  <div class="search-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="filterManufacturers()"
+        placeholder="Buscar por nombre o OUI..."
+      >
+      <button *ngIf="searchTerm" (click)="clearSearch()" class="clear-btn">✕</button>
+    </div>
+    <span class="results-count">{{ filteredManufacturers.length }} fabricantes encontrados</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando fabricantes...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-message">
+    <p>⚠️ {{ error }}</p>
+    <button (click)="loadManufacturers()">Reintentar</button>
+  </div>
+
+  <!-- Manufacturers Grid -->
+  <div *ngIf="!loading && !error" class="manufacturers-grid">
+    <div class="manufacturer-card" *ngFor="let m of filteredManufacturers">
+      <div class="card-icon">{{ getManufacturerIcon(m.name) }}</div>
+      <div class="card-content">
+        <h3 class="manufacturer-name">{{ m.name }}</h3>
+        <div class="oui-badge">
+          <span class="label">OUI:</span>
+          <span class="value">{{ m.oui }}</span>
+        </div>
+        <div class="card-footer">
+          <span class="date">Añadido: {{ m.created_at | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && !error && filteredManufacturers.length === 0" class="no-results">
+    <p>🔍 No se encontraron fabricantes con el término "{{ searchTerm }}"</p>
+    <button (click)="clearSearch()">Limpiar búsqueda</button>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section" *ngIf="!loading">
+    <h3>ℹ️ Sobre los fabricantes</h3>
+    <p>
+      Esta lista contiene los fabricantes de drones conocidos identificados por su 
+      <strong>OUI (Organizationally Unique Identifier)</strong>. El OUI son los primeros 
+      3 bytes (6 caracteres hexadecimales) de una dirección MAC y permite identificar 
+      el fabricante del dispositivo.
+    </p>
+    <p>
+      Cuando se detecta una dirección MAC cuyo OUI coincide con alguno de estos fabricantes, 
+      el sistema la clasifica automáticamente como un posible dron.
+    </p>
+  </div>
+</div>

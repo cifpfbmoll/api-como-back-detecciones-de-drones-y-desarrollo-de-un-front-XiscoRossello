@@ -1,77 +1,82 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/FpM8eaVc)
-# API REST de Detección de Drones con CodeIgniter 4
 
-API REST que funciona como orquestador central para un sistema de detección de drones Wi-Fi. Basado en el artículo [Detección de Drones Wi-Fi](https://medium.com/@noko_kelevra/detecci%C3%B3n-de-drones-wi-fi-64b9cbdef2a6).
+# 🛸 Sistema de Detección de Drones Wi-Fi
 
-## Descripción
+Sistema completo para la detección y monitorización de drones mediante análisis de direcciones MAC Wi-Fi. Incluye una **API REST** como backend y un **panel de control** desarrollado en Angular como frontend.
 
-Esta API tiene dos responsabilidades principales:
-1. **Recibir datos de sensores**: Los scripts Python de detección envían información sobre direcciones MAC detectadas.
-2. **Servir datos al frontend**: Proporciona endpoints para un futuro panel de control/dashboard.
+Basado en el artículo [Detección de Drones Wi-Fi](https://medium.com/@noko_kelevra/detecci%C3%B3n-de-drones-wi-fi-64b9cbdef2a6).
 
-## Requisitos del Sistema
+---
+
+## 📋 Índice
+
+- [Descripción](#-descripción)
+- [Arquitectura del Sistema](#-arquitectura-del-sistema)
+- [Capturas de Pantalla](#-capturas-de-pantalla)
+- [Backend (API REST)](#-backend-api-rest)
+- [Frontend (Angular)](#-frontend-angular)
+- [Instalación y Configuración](#-instalación-y-configuración)
+- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
+- [Autor](#-autor)
+
+---
+
+## 📝 Descripción
+
+Este proyecto implementa un sistema de detección de drones que:
+
+1. **Recibe datos de sensores**: Scripts de detección envían información sobre direcciones MAC detectadas vía Wi-Fi.
+2. **Identifica fabricantes**: Mediante el análisis del OUI (Organizationally Unique Identifier) de las direcciones MAC.
+3. **Proporciona estadísticas**: Dashboard con métricas en tiempo real sobre las detecciones.
+4. **Panel de visualización**: Interfaz web intuitiva para usuarios no técnicos.
+
+---
+
+## 🏗 Arquitectura del Sistema
+
+```
+┌─────────────────┐     HTTP/JSON      ┌─────────────────┐
+│                 │ ◄────────────────► │                 │
+│    Frontend     │                    │     Backend     │
+│    (Angular)    │                    │  (CodeIgniter)  │
+│   Puerto 4200   │                    │   Puerto 8080   │
+│                 │                    │                 │
+└─────────────────┘                    └────────┬────────┘
+                                                │
+                                                ▼
+                                       ┌─────────────────┐
+                                       │     SQLite      │
+                                       │   Base de Datos │
+                                       └─────────────────┘
+```
+
+---
+
+## 📸 Capturas de Pantalla
+
+### Backend - API REST (Postman)
+
+![API REST funcionando en Postman](screenshots/postman-api.png)
+*Prueba de endpoints de la API REST usando Postman*
+
+### Frontend - Panel de Control
+
+![Dashboard del Frontend](screenshots/frontend-dashboard.png)
+*Panel de control mostrando las estadísticas y detecciones*
+
+---
+
+## 🔧 Backend (API REST)
+
+### Requisitos del Sistema
 
 - PHP 8.1 o superior
 - Composer
 - Extensiones PHP: `intl`, `mbstring`, `sqlite3`
 
-## Instalación
+### Estructura de la Base de Datos
 
-### 1. Clonar el repositorio
-```bash
-git clone <url-del-repositorio>
-cd api-drones
-```
-
-### 2. Instalar dependencias
-```bash
-composer install
-```
-
-### 3. Configurar el entorno
-```bash
-cp env .env
-```
-
-Editar el archivo `.env` con la siguiente configuración (ajustar la ruta absoluta):
-```ini
-CI_ENVIRONMENT = development
-
-app.baseURL = 'http://localhost:8080/'
-
-database.default.hostname = 
-database.default.database = /ruta/completa/al/proyecto/writable/database.sqlite
-database.default.DBDriver = SQLite3
-database.default.DBPrefix =
-```
-
-> **Nota**: SQLite requiere la ruta absoluta al archivo de base de datos.
-
-### 4. Crear archivo de base de datos
-```bash
-touch writable/database.sqlite
-```
-
-### 5. Ejecutar migraciones
-```bash
-php spark migrate --all
-```
-
-### 6. Ejecutar seeders (poblar base de datos con fabricantes)
-```bash
-php spark db:seed ManufacturerSeeder
-```
-
-### 7. Iniciar el servidor de desarrollo
-```bash
-php spark serve
-```
-
-El servidor estará disponible en: `http://localhost:8080`
-
-## Estructura de la Base de Datos
-
-### Tabla `manufacturers`
+#### Tabla `manufacturers`
 | Columna | Tipo | Descripción |
 |---------|------|-------------|
 | id | INTEGER (PK) | Identificador único |
@@ -80,7 +85,7 @@ El servidor estará disponible en: `http://localhost:8080`
 | created_at | DATETIME | Fecha de creación |
 | updated_at | DATETIME | Fecha de actualización |
 
-### Tabla `detections`
+#### Tabla `detections`
 | Columna | Tipo | Descripción |
 |---------|------|-------------|
 | id | INTEGER (PK) | Identificador único |
@@ -91,25 +96,29 @@ El servidor estará disponible en: `http://localhost:8080`
 | detected_at | DATETIME | Fecha/hora de detección |
 | created_at | DATETIME | Fecha de creación del registro |
 
-## Endpoints de la API
+### Endpoints de la API
 
 Base URL: `http://localhost:8080/api/v1`
 
-### POST /detections
-Registra una nueva detección de una dirección MAC.
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/detections` | Registra una nueva detección |
+| `GET` | `/detections` | Lista paginada de detecciones |
+| `GET` | `/detections/latest` | Últimas 5 detecciones |
+| `GET` | `/manufacturers` | Lista de fabricantes conocidos |
+| `GET` | `/stats` | Estadísticas del dashboard |
 
-**Request Body:**
+#### POST /detections
 ```json
+// Request
 {
     "mac": "60:60:1F:AA:BB:CC",
     "rssi": -50,
     "sensor_location": "Edificio A - Planta 3",
     "timestamp": "2024-01-15T10:30:00Z"
 }
-```
 
-**Response (201 Created):**
-```json
+// Response (201 Created)
 {
     "status": 201,
     "message": "Detección registrada correctamente.",
@@ -120,72 +129,14 @@ Registra una nueva detección de una dirección MAC.
         "rssi": -50,
         "sensor_location": "Edificio A - Planta 3",
         "detected_at": "2024-01-15 10:30:00",
-        "created_at": "2024-01-15 10:30:05",
         "manufacturer_name": "DJI Technology Co., Ltd."
     }
 }
 ```
 
-### GET /detections
-Lista paginada de detecciones.
-
-**Query Parameters:**
-| Parámetro | Tipo | Opcional | Default | Descripción |
-|-----------|------|----------|---------|-------------|
-| page | int | Sí | 1 | Página actual |
-| limit | int | Sí | 20 | Resultados por página (máx 100) |
-| manufacturer_id | int | Sí | - | Filtrar por fabricante |
-| location | string | Sí | - | Filtrar por ubicación del sensor |
-
-**Response (200 OK):**
+#### GET /stats
 ```json
-{
-    "status": 200,
-    "data": [...],
-    "pagination": {
-        "current_page": 1,
-        "per_page": 20,
-        "total": 100,
-        "total_pages": 5
-    }
-}
-```
-
-### GET /detections/latest
-Obtiene las 5 detecciones más recientes.
-
-**Response (200 OK):**
-```json
-{
-    "status": 200,
-    "data": [...]
-}
-```
-
-### GET /manufacturers
-Lista de todos los fabricantes de drones conocidos.
-
-**Response (200 OK):**
-```json
-{
-    "status": 200,
-    "data": [
-        {
-            "id": 1,
-            "oui": "60:60:1F",
-            "name": "DJI Technology Co., Ltd.",
-            "created_at": "2024-01-15 10:00:00",
-            "updated_at": "2024-01-15 10:00:00"
-        }
-    ]
-}
-```
-
-### GET /stats
-Estadísticas para el dashboard.
-
-**Response (200 OK):**
-```json
+// Response (200 OK)
 {
     "status": 200,
     "data": {
@@ -197,44 +148,180 @@ Estadísticas para el dashboard.
 }
 ```
 
-## Fabricantes Precargados (Seeder)
+### Fabricantes Precargados
 
-El seeder incluye OUIs de los siguientes fabricantes:
-- DJI Technology Co., Ltd. (varios OUIs)
-- Parrot SA / Parrot Drones SAS
-- Yuneec International
-- Espressif Inc. (común en drones DIY)
-- Raspberry Pi Foundation (drones DIY)
+El sistema incluye OUIs de los siguientes fabricantes de drones:
 
-## Colección Postman
+| Fabricante | OUI |
+|------------|-----|
+| DJI Technology Co., Ltd. | 60:60:1F |
+| DJI (Shenzhen) | 48:1C:B9 |
+| DJI Innovation | 34:D2:62 |
+| Parrot SA | 90:3A:E6 |
+| Parrot Drones SAS | A0:14:3D |
+| Yuneec International | E0:B6:F5 |
+| Espressif Inc. | 24:62:AB |
+| Raspberry Pi Foundation | B8:27:EB |
 
-Importa el archivo `Drone_Detection_API.postman_collection.json` en Postman para probar todos los endpoints.
+---
 
-## Comandos Útiles
+## 🎨 Frontend (Angular)
+
+### Características
+
+- **Dashboard**: Vista general con estadísticas y últimas detecciones
+- **Gestión de Detecciones**: Lista completa con filtros y paginación
+- **Registro de Detecciones**: Formulario para añadir nuevas detecciones manualmente
+- **Catálogo de Fabricantes**: Información sobre fabricantes de drones conocidos
+- **Diseño Responsive**: Adaptado a diferentes tamaños de pantalla
+- **Tema Oscuro**: Interfaz moderna con colores corporativos
+
+### Estructura de Componentes
+
+```
+drone-detection-frontend/
+├── src/app/
+│   ├── components/
+│   │   ├── dashboard/       # Panel principal con estadísticas
+│   │   ├── detections/      # Gestión de detecciones
+│   │   ├── manufacturers/   # Lista de fabricantes
+│   │   └── navbar/          # Barra de navegación
+│   ├── models/              # Interfaces TypeScript
+│   └── services/
+│       └── api.ts           # Servicio de comunicación con el backend
+```
+
+### Rutas Disponibles
+
+| Ruta | Componente | Descripción |
+|------|------------|-------------|
+| `/dashboard` | Dashboard | Panel principal |
+| `/detections` | Detections | Lista de detecciones |
+| `/manufacturers` | Manufacturers | Fabricantes conocidos |
+
+---
+
+## 🚀 Instalación y Configuración
+
+### 1. Clonar el repositorio
+```bash
+git clone <url-del-repositorio>
+cd api-como-back-detecciones-de-drones-y-desarrollo-de-un-front-XiscoRossello
+```
+
+### 2. Configurar el Backend
 
 ```bash
+# Instalar dependencias PHP
+composer install
+
+# Copiar archivo de configuración
+cp env .env
+
+# Editar .env con la configuración de la base de datos
+# CI_ENVIRONMENT = development
+# app.baseURL = 'http://localhost:8080/'
+# database.default.database = /ruta/completa/writable/database.sqlite
+# database.default.DBDriver = SQLite3
+
+# Crear archivo de base de datos
+touch writable/database.sqlite
+
 # Ejecutar migraciones
 php spark migrate --all
 
-# Revertir migraciones
-php spark migrate:rollback
-
-# Ejecutar seeder
+# Poblar base de datos con fabricantes
 php spark db:seed ManufacturerSeeder
 
-# Iniciar servidor
+# Iniciar servidor backend
 php spark serve
-
-# Ver rutas disponibles
-php spark routes
 ```
 
-## Tecnologías
+El backend estará disponible en: `http://localhost:8080`
 
+### 3. Configurar el Frontend
+
+```bash
+# Navegar al directorio del frontend
+cd drone-detection-frontend
+
+# Instalar dependencias
+npm install
+
+# Iniciar servidor de desarrollo
+npm start
+```
+
+El frontend estará disponible en: `http://localhost:4200`
+
+---
+
+## 🛠 Tecnologías Utilizadas
+
+### Backend
 - **Framework**: CodeIgniter 4.6
-- **Base de datos**: SQLite3
-- **PHP**: 8.1+
+- **Lenguaje**: PHP 8.1+
+- **Base de Datos**: SQLite3
+- **API**: REST con JSON
 
-## Licencia
+### Frontend
+- **Framework**: Angular 19
+- **Lenguaje**: TypeScript
+- **Estilos**: SCSS
+- **HTTP Client**: Angular HttpClient
 
-Proyecto educativo - Desarrollo en Entorno Servidor - 2º Grado en Ingeniería Informática
+### Herramientas de Desarrollo
+- **Testing API**: Postman
+- **Control de Versiones**: Git
+- **IDE**: Visual Studio Code
+
+---
+
+## 📦 Colección Postman
+
+Se incluye el archivo `Drone_Detection_API.postman_collection.json` con todos los endpoints configurados para pruebas.
+
+**Cómo importar:**
+1. Abrir Postman
+2. File → Import
+3. Seleccionar el archivo `Drone_Detection_API.postman_collection.json`
+
+---
+
+## 📚 Comandos Útiles
+
+### Backend (CodeIgniter)
+```bash
+php spark serve              # Iniciar servidor
+php spark migrate --all      # Ejecutar migraciones
+php spark migrate:rollback   # Revertir migraciones
+php spark db:seed ManufacturerSeeder  # Ejecutar seeder
+php spark routes             # Ver rutas disponibles
+```
+
+### Frontend (Angular)
+```bash
+npm start                    # Iniciar servidor de desarrollo
+npm run build                # Compilar para producción
+ng generate component <nombre>  # Crear nuevo componente
+ng generate service <nombre>    # Crear nuevo servicio
+```
+
+---
+
+## 👤 Autor
+
+**Xisco Rosselló**
+
+Proyecto desarrollado para los módulos de:
+- Desarrollo Web en Entorno Servidor
+- Desarrollo Web en Entorno Cliente
+- Diseño de Interfaces
+
+CIFP Francesc de Borja Moll - 2º DAW - Curso 2024/2025
+
+---
+
+## 📄 Licencia
+
+Proyecto educativo - Todos los derechos reservados

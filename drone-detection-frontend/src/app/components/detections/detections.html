@@ -1,0 +1,161 @@
+<div class="detections-page">
+  <div class="page-header">
+    <h1 class="page-title">📡 Gestión de Detecciones</h1>
+    <button class="btn-add" (click)="toggleForm()">
+      {{ showForm ? '✕ Cancelar' : '+ Nueva Detección' }}
+    </button>
+  </div>
+
+  <!-- New Detection Form -->
+  <div class="form-container" *ngIf="showForm">
+    <h3>Registrar Nueva Detección</h3>
+    
+    <div *ngIf="formError" class="alert error">{{ formError }}</div>
+    <div *ngIf="formSuccess" class="alert success">{{ formSuccess }}</div>
+    
+    <form (ngSubmit)="submitDetection()">
+      <div class="form-group">
+        <label for="mac">Dirección MAC *</label>
+        <input 
+          type="text" 
+          id="mac" 
+          [(ngModel)]="newDetection.mac" 
+          name="mac"
+          placeholder="60:60:1F:AA:BB:CC"
+          pattern="^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$"
+          required
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="rssi">RSSI (dBm)</label>
+        <input 
+          type="number" 
+          id="rssi" 
+          [(ngModel)]="newDetection.rssi" 
+          name="rssi"
+          min="-100"
+          max="0"
+        >
+        <small>Intensidad de señal: {{ newDetection.rssi }} dBm</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Ubicación del Sensor *</label>
+        <input 
+          type="text" 
+          id="location" 
+          [(ngModel)]="newDetection.sensor_location" 
+          name="sensor_location"
+          placeholder="Edificio A - Planta 3"
+          required
+        >
+      </div>
+      
+      <button type="submit" class="btn-submit" [disabled]="submitting">
+        {{ submitting ? 'Registrando...' : 'Registrar Detección' }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <h3>🔍 Filtros</h3>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Fabricante</label>
+        <select [(ngModel)]="selectedManufacturer">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let m of manufacturers" [ngValue]="m.id">{{ m.name }}</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>Ubicación</label>
+        <input 
+          type="text" 
+          [(ngModel)]="locationFilter" 
+          placeholder="Buscar ubicación..."
+        >
+      </div>
+      
+      <div class="filter-actions">
+        <button class="btn-filter" (click)="applyFilters()">Aplicar</button>
+        <button class="btn-clear" (click)="clearFilters()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Cargando detecciones...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="error-message">
+    <p>⚠️ {{ error }}</p>
+    <button (click)="loadDetections()">Reintentar</button>
+  </div>
+
+  <!-- Detections Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <div class="table-info">
+      <span>Mostrando {{ detections.length }} de {{ total }} detecciones</span>
+    </div>
+    
+    <table class="detections-table" *ngIf="detections.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>MAC Address</th>
+          <th>Fabricante</th>
+          <th>RSSI</th>
+          <th>Ubicación</th>
+          <th>Detectado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of detections">
+          <td>{{ d.id }}</td>
+          <td class="mac">{{ d.mac_address }}</td>
+          <td [class.unknown]="!d.manufacturer_name">
+            {{ d.manufacturer_name || 'Desconocido' }}
+          </td>
+          <td>
+            <span class="rssi-badge" [ngClass]="getRssiClass(d.rssi)">
+              {{ d.rssi }} dBm
+            </span>
+          </td>
+          <td>{{ d.sensor_location }}</td>
+          <td>{{ d.detected_at }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="detections.length === 0" class="no-data">
+      <p>No se encontraron detecciones</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button 
+        (click)="goToPage(currentPage - 1)" 
+        [disabled]="currentPage === 1"
+        class="page-btn"
+      >
+        ← Anterior
+      </button>
+      
+      <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+      
+      <button 
+        (click)="goToPage(currentPage + 1)" 
+        [disabled]="currentPage === totalPages"
+        class="page-btn"
+      >
+        Siguiente →
+      </button>
+    </div>
+  </div>
+</div>

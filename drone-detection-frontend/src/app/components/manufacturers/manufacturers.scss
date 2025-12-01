@@ -1,0 +1,249 @@
+.manufacturers-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: #e94560;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      padding-right: 2.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+
+      &:focus {
+        outline: none;
+        border-color: #e94560;
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1rem;
+
+      &:hover {
+        color: #e94560;
+      }
+    }
+  }
+
+  .results-count {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem;
+  color: #fff;
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(233, 69, 96, 0.3);
+    border-top-color: #e94560;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  p {
+    margin-top: 1rem;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.1);
+  border: 1px solid #ff4444;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  color: #ff4444;
+
+  button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #e94560;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+  }
+}
+
+.manufacturers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.manufacturer-card {
+  display: flex;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-icon {
+    font-size: 3rem;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .manufacturer-name {
+    color: #fff;
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .oui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(233, 69, 96, 0.1);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    width: fit-content;
+
+    .label {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.8rem;
+    }
+
+    .value {
+      font-family: 'Courier New', monospace;
+      color: #e94560;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+  }
+
+  .card-footer {
+    margin-top: auto;
+    padding-top: 0.5rem;
+
+    .date {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+
+  p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  button {
+    padding: 0.75rem 1.5rem;
+    background: #e94560;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      background: #d63050;
+    }
+  }
+}
+
+.info-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3498db;
+
+  h3 {
+    color: #3498db;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      color: #e94560;
+    }
+  }
+}
